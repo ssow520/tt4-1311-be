@@ -101,8 +101,31 @@ const login = async (req, res) => {
     }
 }
 
-const getMe = (req, res) => {
+const getMe = async (req, res) => {
+    try{
+        if(!req.user.id || !req.user.email){
+            return res.status(401).json({
+                message: "Unauthorized"
+            });
+        }
 
+        const user = await User.findById(req.user.id).select("-password");
+
+        if(!user){
+            return res.status(404).json({message: "User not found."});
+        }
+
+        return res.json({
+            message: "Authenticated user fetched successfully",
+            data: {
+                user
+            }
+        });
+    }
+    catch(error){
+        console.log(error);
+        return res.status(500).json({message: "Error while getting user!"});
+    }
 }
 
 module.exports = { register, login, getMe};
