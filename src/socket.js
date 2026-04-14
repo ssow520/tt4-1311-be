@@ -29,4 +29,26 @@ const emitTaskCreated = (task) => {
     });
 }
 
-module.exports = { initializeSocket,  emitTaskCreated};
+const emitTaskUpdated = (task) => {
+    if(!io){
+        return;
+    }
+
+    io.emit("task:updated", {
+        message: "A task was updated.",
+        data: { task }
+    });
+}
+
+const emitTaskDeleted = (taskId) => {
+    if(!io){
+        return;
+    }
+
+    io.emit("task:deleted", {
+        message: "A task was deleted.",
+        data: { taskId }
+    });
+}
+
+module.exports = { initializeSocket,  emitTaskCreated, emitTaskUpdated, emitTaskDeleted};

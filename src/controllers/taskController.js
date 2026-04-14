@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Task = require("../models/Task");
 const User = require("../models/User");
-const { emitTaskCreated } = require("../socket");
+const { emitTaskCreated, emitTaskUpdated, emitTaskDeleted } = require("../socket");
 
 const taskPopulate = [
   { path: "userId", select: "_id name email" },
@@ -111,6 +111,8 @@ const deleteTask = async (req, res) => {
 
         await task.deleteOne();
 
+        emitTaskDeleted(task);
+
         return res.status(200).json({
             message: "Task deleted successfully.",
             data: {
@@ -183,6 +185,7 @@ const updateTask = async (req, res) => {
         runValidators: true
     }).populate(taskPopulate);
 
+    emitTaskUpdated(updatedTask);
 
     return res.status(200).json({
         message: "Task updated successfully.",
